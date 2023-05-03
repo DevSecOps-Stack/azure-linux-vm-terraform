@@ -23,7 +23,16 @@ resource "null_resource" "ssh_keygen" {
   provisioner "local-exec" {
     command = local.ssh_keygen_command
   }
-   triggers = {
+
+  provisioner "local-exec" {
+    command = "cat ${path.module}/id_rsa.pub > ${path.module}/public_key.txt"
+  }
+
+  provisioner "local-exec" {
+    command = "cat ${path.module}/id_rsa > ${path.module}/private_key.txt"
+  }
+
+  triggers = {
     public_key = local.ssh_public_key
     private_key = local.ssh_private_key
   }
