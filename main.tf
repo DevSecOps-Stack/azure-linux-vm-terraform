@@ -177,8 +177,7 @@ resource "azurerm_linux_virtual_machine" "example_linux_vm" {
   network_interface_ids         = [element(azurerm_network_interface.example_nic.*.id, count.index)]
   size                          = "Standard_A1_v2"
   admin_username                = "adminuser"
-  public_key                    = azurerm_key_vault_secret.public_key.value
-  key_vault_secret_id           = azurerm_key_vault_secret.private_key.id
+  #key_vault_secret_id           = azurerm_key_vault_secret.private_key.id
 
   source_image_reference {
     publisher = "Canonical"
@@ -187,7 +186,8 @@ resource "azurerm_linux_virtual_machine" "example_linux_vm" {
     version   = "latest"
   }
   admin_ssh_key {
-    username   = "adminuser"
+    username    = "adminuser"
+    public_key  = azurerm_key_vault_secret.public_key.value
   }
   os_disk {
     caching              = "ReadWrite"
