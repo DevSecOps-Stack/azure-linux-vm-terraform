@@ -201,7 +201,7 @@ resource "azurerm_linux_virtual_machine" "example_linux_vm" {
   }
   admin_ssh_key {
     username    = "adminuser"
-    public_key  = azurerm_key_vault_secret.public_key.value
+    public_key  = azurerm_key_vault_secret.public_key.id
   }
   os_disk {
     caching              = "ReadWrite"
