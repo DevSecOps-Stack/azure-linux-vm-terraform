@@ -52,16 +52,16 @@ resource "azurerm_key_vault" "example_rg" {
 resource "azurerm_key_vault_secret" "public_key" {
   depends_on = [null_resource.ssh_keygen]
 
-  name         = "vm-ssh-public-key"
-  value        = file("${path.module}/id_rsa.pub")
-  key_vault_id = azurerm_key_vault.example_rg.id
+  name          = "vm-ssh-public-key"
+  value         = local.ssh_public_key
+  key_vault_id  = azurerm_key_vault.example_rg.id
 }
 
 resource "azurerm_key_vault_secret" "private_key" {
   depends_on = [null_resource.ssh_keygen]
 
   name         = "vm-ssh-private-key"
-  value        = file("${path.module}/id_rsa")
+  value        = local.ssh_private_key
   key_vault_id = azurerm_key_vault.example_rg.id
   
 }
