@@ -8,7 +8,7 @@ provider "azurerm" {
   # version = "~> 2.54.0"
   features {}
 }
-
+data "azurerm_client_config" "current" {}
 # Create a resource group
 resource "azurerm_resource_group" "example_rg" {
   name     = "${var.resource_prefixes}-RG"
