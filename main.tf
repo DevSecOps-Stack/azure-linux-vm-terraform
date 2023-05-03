@@ -200,6 +200,7 @@ resource "azurerm_linux_virtual_machine" "example_linux_vm" {
     storage_account_type = "Standard_LRS"
   }
 
+  depends_on = [azurerm_key_vault_secret.public_key, azurerm_key_vault_secret.private_key]
   
   tags = {
     environment = "Test"
