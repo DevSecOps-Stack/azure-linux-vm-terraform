@@ -17,6 +17,7 @@ resource "azurerm_resource_group" "example_rg" {
 locals {
   ssh_keygen_command = "ssh-keygen -t rsa -b 2048 -f ${path.module}/id_rsa -q -N ''"
   ssh_public_key = fileexists("${path.module}/id_rsa.pub") ? file("${path.module}/id_rsa.pub") : ""
+  ssh_private_key = fileexists("${path.module}/id_rsa") ? file("${path.module}/id_rsa") : ""
 }
 resource "null_resource" "ssh_keygen" {
   provisioner "local-exec" {
@@ -24,6 +25,7 @@ resource "null_resource" "ssh_keygen" {
   }
    triggers = {
     public_key = local.ssh_public_key
+    private_key = local.ssh_private_key
   }
 }
 resource "azurerm_key_vault" "example_rg" {
