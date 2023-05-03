@@ -23,14 +23,17 @@ locals {
 resource "null_resource" "ssh_keygen" {
   provisioner "local-exec" {
     command = local.ssh_keygen_command
+  
   }
 
   provisioner "local-exec" {
     command = "cat ${path.module}/id_rsa.pub > ${path.module}/public_key.txt"
+    interpreter = ["bash", "-c"]
   }
 
   provisioner "local-exec" {
     command = "cat ${path.module}/id_rsa > ${path.module}/private_key.txt"
+    interpreter = ["bash", "-c"]
   }
 
   triggers = {
