@@ -151,8 +151,8 @@ resource "azurerm_subnet_network_security_group_association" "example_subnet_nsg
 
 # use existing log analytics workspace
 data "azurerm_log_analytics_workspace" "example_log_analytics" {
-  name                = "Logs-pd-hub"
-  resource_group_name = "logs-pd-hub-rg"
+  name                = "logs-prod-hub"
+  resource_group_name = "logs-prod-hub-rg"
 }
 resource "azurerm_virtual_machine_extension" "example" {
   count = var.node_count
