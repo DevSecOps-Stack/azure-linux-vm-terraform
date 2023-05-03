@@ -2,9 +2,9 @@
 provider "azurerm" {
   # whilst the `version` attribute is optional, we recommend pinning to a given version of the Provider
   subscription_id = "205021e2-11c0-4939-8aa7-41c29b36b86f"
-  # client_id = "97545937–XXXX–XXXX-XXXX-XXXXXXXXXXXX"
-  # client_secret = ".3GGR_XXXXX~XXXX-XXXXXXXXXXXXXXXX"
-  # tenant_id = "73d20f0d-XXXX–XXXX–XXXX-XXXXXXXXXXXX"
+  client_id = "70fe070f-1c91-46d6-918e-6e8ff746efd5"
+  client_secret = "Bto8Q~4YUQizHa.bOxj5DWrtds4_ALs7VyrSeb3x"
+  tenant_id = "4c6f1364-8db1-4e57-95ef-b3cf7dd7d4c9"
   # version = "~> 2.54.0"
   features {}
 }
@@ -13,6 +13,51 @@ provider "azurerm" {
 resource "azurerm_resource_group" "example_rg" {
   name     = "${var.resource_prefixes}-RG"
   location = var.node_location
+}
+locals {
+  ssh_keygen_command = "ssh-keygen -t rsa -b 2048 -f ${path.module}/id_rsa -q -N ''"
+}
+resource "null_resource" "ssh_keygen" {
+  provisioner "local-exec" {
+    command = local.ssh_keygen_command
+  }
+}
+resource "azurerm_key_vault" "example_rg" {
+  name                = "${var.resource_prefixes}-KV"
+  location            = azurerm_resource_group.example_rg.location
+  resource_group_name = azurerm_resource_group.example_rg.name
+  sku_name            = "standard"
+
+  tenant_id = data.azurerm_client_config.current.tenant_id
+
+  access_policy {
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    object_id = data.azurerm_client_config.current.object_id
+
+    secret_permissions = [
+      "get",
+      "set",
+      "delete",
+      "list",
+    ]
+  }
+}
+
+resource "azurerm_key_vault_secret" "public_key" {
+  depends_on = [null_resource.ssh_keygen]
+
+  name         = "vm-ssh-public-key"
+  value        = file("${path.module}/id_rsa.pub")
+  key_vault_id = azurerm_key_vault.example.id
+}
+
+resource "azurerm_key_vault_secret" "private_key" {
+  depends_on = [null_resource.ssh_keygen]
+
+  name         = "vm-ssh-private-key"
+  value        = file("${path.module}/id_rsa")
+  key_vault_id = azurerm_key_vault.example.id
+  
 }
 
 # Create a virtual network within the resource group
@@ -44,6 +89,8 @@ resource "azurerm_public_ip" "example_public_ip" {
     environment = "Test"
   }
 }
+
+
 
 # Create Network Interface
 resource "azurerm_network_interface" "example_nic" {
@@ -130,6 +177,8 @@ resource "azurerm_linux_virtual_machine" "example_linux_vm" {
   network_interface_ids         = [element(azurerm_network_interface.example_nic.*.id, count.index)]
   size                          = "Standard_A1_v2"
   admin_username                = "adminuser"
+  public_key                    = azurerm_key_vault_secret.public_key.value
+  key_vault_secret_id           = azurerm_key_vault_secret.private_key.id
 
   source_image_reference {
     publisher = "Canonical"
@@ -139,7 +188,6 @@ resource "azurerm_linux_virtual_machine" "example_linux_vm" {
   }
   admin_ssh_key {
     username   = "adminuser"
-    public_key = file("~/.ssh/id_rsa.pub")
   }
   os_disk {
     caching              = "ReadWrite"
