@@ -200,9 +200,9 @@ resource "azurerm_linux_virtual_machine" "example_linux_vm" {
   #key_vault_secret_id           = azurerm_key_vault_secret.private_key.id
 
   source_image_reference {
-    publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "18.04-LTS"
+    publisher = "OpenLogic"
+    offer     = "CentOS"
+    sku       = "7.5"
     version   = "latest"
   }
   admin_ssh_key {
