@@ -8,75 +8,78 @@ provider "azurerm" {
   # version = "~> 2.54.0"
   features {}
 }
-data "azurerm_client_config" "current" {}
+# data "azurerm_client_config" "current" {}
+
+# locals {
+#   ssh_keygen_command = "ssh-keygen -t rsa -b 2048 -f ${path.module}/id_rsa -q -N ''"
+#   ssh_public_key     = fileexists("${path.module}/id_rsa.pub") ? file("${path.module}/id_rsa.pub") : ""
+#   ssh_private_key    = fileexists("${path.module}/id_rsa") ? file("${path.module}/id_rsa") : ""
+# }
+
+# resource "null_resource" "ssh_keygen" {
+#   provisioner "local-exec" {
+#     command = local.ssh_keygen_command
+  
+#   }
+
+#   provisioner "local-exec" {
+#     command = "cat ${path.module}/id_rsa.pub > ${path.module}/public_key.txt"
+#     interpreter = ["bash", "-c"]
+#   }
+
+#   provisioner "local-exec" {
+#     command = "cat ${path.module}/id_rsa > ${path.module}/private_key.txt"
+#     interpreter = ["bash", "-c"]
+#   }
+
+#   triggers = {
+#     public_key  = local.ssh_public_key
+#     private_key = local.ssh_private_key
+#   }
+# }
+
+# resource "azurerm_key_vault" "example_rg" {
+#   name                = "${var.resource_prefixes}-KV"
+#   location            = azurerm_resource_group.example_rg.location
+#   resource_group_name = azurerm_resource_group.example_rg.name
+#   sku_name            = "standard"
+#   tenant_id           = data.azurerm_client_config.current.tenant_id
+
+#   access_policy {
+#     tenant_id = data.azurerm_client_config.current.tenant_id
+#     object_id = data.azurerm_client_config.current.object_id
+
+#     secret_permissions = [
+#       "Get",
+#       "Set",
+#       "Delete",
+#       "List",
+#     ]
+#   }
+# }
+
+# resource "azurerm_key_vault_secret" "public_key" {
+#   depends_on = [null_resource.ssh_keygen]
+
+#   name          = "vm-ssh-public-key"
+#   value         = local.ssh_public_key
+#   key_vault_id  = azurerm_key_vault.example_rg.id
+# }
+
+# resource "azurerm_key_vault_secret" "private_key" {
+#   depends_on = [null_resource.ssh_keygen]
+
+#   name         = "vm-ssh-private-key"
+#   value        = local.ssh_private_key
+#   key_vault_id = azurerm_key_vault.example_rg.id
+# }
+
 # Create a resource group
 resource "azurerm_resource_group" "example_rg" {
   name     = "${var.resource_prefixes}-RG"
   location = var.node_location
 }
-locals {
-  ssh_keygen_command = "ssh-keygen -t rsa -b 2048 -f ${path.module}/id_rsa -q -N ''"
-  ssh_public_key     = fileexists("${path.module}/id_rsa.pub") ? file("${path.module}/id_rsa.pub") : ""
-  ssh_private_key    = fileexists("${path.module}/id_rsa") ? file("${path.module}/id_rsa") : ""
-}
 
-resource "null_resource" "ssh_keygen" {
-  provisioner "local-exec" {
-    command = local.ssh_keygen_command
-  
-  }
-
-  provisioner "local-exec" {
-    command = "cat ${path.module}/id_rsa.pub > ${path.module}/public_key.txt"
-    interpreter = ["bash", "-c"]
-  }
-
-  provisioner "local-exec" {
-    command = "cat ${path.module}/id_rsa > ${path.module}/private_key.txt"
-    interpreter = ["bash", "-c"]
-  }
-
-  triggers = {
-    public_key  = local.ssh_public_key
-    private_key = local.ssh_private_key
-  }
-}
-
-resource "azurerm_key_vault" "example_rg" {
-  name                = "${var.resource_prefixes}-KV"
-  location            = azurerm_resource_group.example_rg.location
-  resource_group_name = azurerm_resource_group.example_rg.name
-  sku_name            = "standard"
-  tenant_id           = data.azurerm_client_config.current.tenant_id
-
-  access_policy {
-    tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = data.azurerm_client_config.current.object_id
-
-    secret_permissions = [
-      "Get",
-      "Set",
-      "Delete",
-      "List",
-    ]
-  }
-}
-
-resource "azurerm_key_vault_secret" "public_key" {
-  depends_on = [null_resource.ssh_keygen]
-
-  name          = "vm-ssh-public-key"
-  value         = local.ssh_public_key
-  key_vault_id  = azurerm_key_vault.example_rg.id
-}
-
-resource "azurerm_key_vault_secret" "private_key" {
-  depends_on = [null_resource.ssh_keygen]
-
-  name         = "vm-ssh-private-key"
-  value        = local.ssh_private_key
-  key_vault_id = azurerm_key_vault.example_rg.id
-}
 # Create a virtual network within the resource group
 resource "azurerm_virtual_network" "example_vnet" {
   name                = "${var.resource_prefixes}-vnet"
