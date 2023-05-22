@@ -1,5 +1,5 @@
-node_location = "East US"
+node_location     = "East US"
 resource_prefixes = "linuxnode"
-Environment = "Test"
-node_count = 2
-client_secret  = ""
+Environment       = "Test"
+node_count        = 2
+client_secret     = ""
