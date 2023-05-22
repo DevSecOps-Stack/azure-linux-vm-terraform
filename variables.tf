@@ -29,3 +29,10 @@ variable "client_secret" {
   description = "client secret"
   type        = string
 }
+
+variable "public_key_id" {
+  description = "public_key_id"
+  type        = string
+}
+
+
