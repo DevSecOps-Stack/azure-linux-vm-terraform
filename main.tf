@@ -103,7 +103,7 @@ resource "azurerm_public_ip" "example_public_ip" {
   #name = "${var.resource_prefix}-PublicIP"
   location            = azurerm_resource_group.example_rg.location
   resource_group_name = azurerm_resource_group.example_rg.name
-  allocation_method   = var.Environment == "Test" ? "Static" : "Dynamic"
+  allocation_method   = var.environment == "Test" ? "Static" : "Dynamic"
 
   tags = {
     environment = "Test"
