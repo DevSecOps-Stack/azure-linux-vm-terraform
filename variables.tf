@@ -24,3 +24,8 @@ type = string
 variable "node_count" {
 type = number
 }
+
+variable "client_secret" {
+  description = "client secret"
+  type        = string
+}
