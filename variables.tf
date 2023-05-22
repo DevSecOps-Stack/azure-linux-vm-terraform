@@ -17,7 +17,7 @@ default = ["1.0.1.0/24"]
 }
 
 #variable for Environment
-variable "Environment" {
+variable "environment" {
 type = string
 }
 
