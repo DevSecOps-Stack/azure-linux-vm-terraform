@@ -198,11 +198,10 @@ resource "azurerm_linux_virtual_machine" "example_linux_vm" {
   size                          = "Standard_A1_v2"
   admin_username                = "adminuser"
   #key_vault_secret_id           = azurerm_key_vault_secret.private_key.id
-
-  source_image_reference {
-    publisher = "OpenLogic"
-    offer     = "CentOS"
-    sku       = "7.5"
+source_image_reference {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "16.04-LTS"
     version   = "latest"
   }
   admin_ssh_key {
